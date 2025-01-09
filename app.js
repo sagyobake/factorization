@@ -1,6 +1,7 @@
 function handler(_req) {
+    const html = Deno.readFile('./index.html');
     // Create a response with html as its body.
-    const response = new Response("<html> Hello </html>", {
+    const response = new Response(html, {
         status: 200,
         headers: {
             "content-type": "text/html",
