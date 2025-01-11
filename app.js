@@ -1,17 +1,15 @@
-function handler(_req) {
-    const html = Deno.readFile('./index.html');
-    // Create a response with html as its body.
-    const response = new Response(html, {
-        status: 200,
-        headers: {
-            "content-type": "text/html",
-        },
+Deno.serve((req) => {
+    if (req.headers.get("upgrade") != "websocket") {
+        return new Response(null, { status: 501 });
+    }
+    const { socket, response } = Deno.upgradeWebSocket(req);
+    socket.addEventListener("open", () => {
+        console.log("a client connected!");
     });
-
-    console.log(response.status); // 200
-    console.log(response.headers.get("content-type")); // text/html
-
+    socket.addEventListener("message", (event) => {
+        if (event.data === "ping") {
+            socket.send("pong");
+        }
+    });
     return response;
-}
-
-Deno.serve(handler);
+});
